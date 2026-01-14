@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>XToll Interactive Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .map-container-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 95%;
+      margin: 20px auto;
+    }
+
+    #map {
+      height: 80vh;
+      flex-grow: 2;
+      min-width: 300px;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    #info-panel {
+      flex-grow: 1;
+      min-width: 300px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      height: 80vh;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 1000px) {
+      .map-container-wrapper {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #map,
+      #info-panel {
+        width: 100%;
+        max-width: 95%;
+        margin: 0;
+      }
+
+      #map {
+        height: 50vh;
+      }
+
+      #info-panel {
+        margin-top: 20px;
+        height: auto;
+      }
+    }
+
+    #metadata-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #metadata-table th,
+    #metadata-table td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    #metadata-table th {
+      background-color: #e9e9e9;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    #metadata-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .header-container {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin: 10px 0;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+  <div class="header-container" id="map-title"></div>
+  <div class="map-container-wrapper">
+    <div id="map"></div>
+    <div id="info-panel">
+      <h3>Selected County</h3>
+      <table id="metadata-table">
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">Click a county on the map to see its data.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      let VARIABLE_KEY = "{{ variable_name }}";
+      if (!VARIABLE_KEY || VARIABLE_KEY.trim() === "") {
+        console.warn("VARIABLE_KEY was empty, defaulting to 'gap_all'.");
+        VARIABLE_KEY = "gap_all";
+      }
+
+      // Function to humanize the variable name for the title
+      function getHumanizedTitle(key) {
+        if (key === 'gap_all') return "Misperception Gap for All Extreme Weather Events";
+        else if (key === 'gap_smoke') return "Wildfire Smoke Misperception Gap";
+        return key.replace('gap_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + " Misperception Gap";
+      }
+
+      // Set the dynamic title
+      document.getElementById('map-title').textContent = getHumanizedTitle(VARIABLE_KEY);
+
+
+      // --- Global Map Variables ---
+      const DEFAULT_CENTER = [39.8283, -98.5795];
+      const DEFAULT_ZOOM = 5;
+      var geojsonLayer; // For County Data
+      var stateLayer = null; // New: For State Boundaries
+      var currentLayer = null;
+
+      // Variables for Continuous Coloring
+      var dataMin = 0;
+      var dataMax = 0;
+      const COLOR_LOW = "#4575b4"; // Blue
+      const COLOR_MID = "#FFFF00"; // Yellow
+      const COLOR_HIGH = "#d73027"; // Red
+
+      // Map Initialization (Leaflet defaults to WGS84/EPSG:4326)
+      var map = L.map('map').setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+
+      // Using CartoDB Positron tiles for a light, grey background
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+      }).addTo(map);
+
+      map.invalidateSize();
+
+      // -------------------------------------------------------------
+      // --- COLOR INTERPOLATION FUNCTIONS ---
+      // -------------------------------------------------------------
+
+      function hexToRgb(hex) {
+        const cleanedHex = hex.startsWith('#') ? hex.slice(1) : hex;
+        if (cleanedHex.length === 3) {
+          const [r, g, b] = cleanedHex.split('').map(c => c + c);
+          return [parseInt(r, 16), parseInt(g, 16), parseInt(b, 16)];
+        }
+        var bigint = parseInt(cleanedHex, 16);
+        var r = (bigint >> 16) & 255;
+        var g = (bigint >> 8) & 255;
+        var b = bigint & 255;
+        return [r, g, b];
+      }
+
+      function rgbToHex(r, g, b) {
+        r = Math.min(255, Math.max(0, r));
+        g = Math.min(255, Math.max(0, g));
+        b = Math.min(255, Math.max(0, b));
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+      }
+
+      function interpolateRgb(rgb1, rgb2, factor) {
+        var r = Math.round(rgb1[0] + (rgb2[0] - rgb1[0]) * factor);
+        var g = Math.round(rgb1[1] + (rgb2[1] - rgb1[1]) * factor);
+        var b = Math.round(rgb1[2] + (rgb2[2] - rgb1[2]) * factor);
+        return [r, g, b];
+      }
+
+      // Continuous Diverging Scale Interpolator (Low->Mid->High)
+      function getContinuousColor(value, min, mid, max) {
+        if (isNaN(value) || value === null || typeof value === 'undefined') {
+          return '#A9A9A9'; // Fallback grey color
+        }
+
+        const rgbLow = hexToRgb(COLOR_LOW);
+        const rgbMid = hexToRgb(COLOR_MID);
+        const rgbHigh = hexToRgb(COLOR_HIGH);
+
+        if (value < mid) {
+          // Interpolate between Low (Blue) and Mid (Yellow)
+          const range = mid - min;
+          const factor = range === 0 ? 0.5 : Math.min(1, Math.max(0, (value - min) / range));
+          const [r, g, b] = interpolateRgb(rgbLow, rgbMid, factor);
+          return rgbToHex(r, g, b);
+        } else {
+          // Interpolate between Mid (Yellow) and High (Red)
+          const range = max - mid;
+          const factor = range === 0 ? 0.5 : Math.min(1, Math.max(0, (value - mid) / range));
+          const [r, g, b] = interpolateRgb(rgbMid, rgbHigh, factor);
+          return rgbToHex(r, g, b);
+        }
+      }
+
+
+      function getColor(d) {
+        const numericD = parseFloat(d);
+        return getContinuousColor(numericD, dataMin, 0, dataMax);
+      }
+
+      function defaultStyle(feature) {
+        const diff = feature && feature.properties ? feature.properties[VARIABLE_KEY] : null;
+
+        return {
+          fillColor: getColor(diff),
+          weight: 1,
+          opacity: 1,
+          color: 'transparent',
+          fillOpacity: 0.7
+        };
+      }
+
+      function stateBorderStyle() {
+        return {
+          color: '#333',
+          weight: 1.5,
+          fillOpacity: 0,
+          opacity: 1
+        };
+      }
+
+      function highlightFeature(e) {
+        var layer = e.target;
+
+        if (currentLayer && geojsonLayer) {
+          geojsonLayer.resetStyle(currentLayer);
+        }
+
+        layer.setStyle({
+          weight: 3,
+          color: 'yellow',
+          dashArray: '',
+          fillOpacity: 0.9
+        });
+        layer.bringToFront();
+        currentLayer = layer;
+      }
+
+      function displayMetadata(data) {
+        var tbody = document.querySelector('#metadata-table tbody');
+        tbody.innerHTML = '';
+
+        const currentDataKey = VARIABLE_KEY;
+        const currentDataLabel = getHumanizedTitle(currentDataKey);
+
+        const displayOrder = ["County", "State", "GEOID", "Region", "Division", currentDataKey, "gap_all", "rank_all", "gap_smoke", "rank_smoke", "gap_heat", "rank_heat", "gap_flood", "rank_flood", "gap_drought", "rank_drought", "income", "age", "nonwhite", "education", "personal", "happening"];
+        const dataMap = new Map(Object.entries(data));
+        const processedKeys = new Set();
+
+
+        displayOrder.forEach(key => {
+          let label;
+          label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          let value = dataMap.get(key);
+          if (value === undefined) value = dataMap.get(key.toLowerCase());
+          if (value === undefined) value = dataMap.get(key.toUpperCase());
+
+          if (value !== undefined && value !== null && !processedKeys.has(label)) {
+            var row = tbody.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = '<strong>' + label + '</strong>';
+            cell2.textContent = formatValue(value);
+            processedKeys.add(label);
+
+            dataMap.delete(key);
+            dataMap.delete(key.toLowerCase());
+            dataMap.delete(key.toUpperCase());
+          }
+        });
+
+        dataMap.forEach((value, key) => {
+          const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          if (value !== null && typeof value !== 'undefined' && !processedKeys.has(label)) {
+            var row = tbody.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = '<strong>' + label + '</strong>';
+            cell2.textContent = formatValue(value);
+          }
+        });
+      }
+
+      function formatValue(value) {
+        if (value === null || typeof value === 'undefined') {
+          return 'N/A';
+        }
+        const numericValue = parseFloat(value);
+        if (!isNaN(numericValue) && numericValue !== Math.round(numericValue)) {
+          return numericValue.toFixed(2);
+        }
+        return value;
+      }
+
+      function onFeatureClick(e) {
+        var properties = e.target.feature.properties;
+        highlightFeature(e);
+        displayMetadata(properties);
+      }
+
+      // --- GeoJSON Initialization (County Layer) ---
+      function onEachFeature(feature, layer) {
+        layer.on({
+          click: onFeatureClick,
+          mouseover: highlightFeature,
+          mouseout: function (e) {
+            if (e.target !== currentLayer) {
+              geojsonLayer.resetStyle(e.target);
+            }
+          }
+        });
+        const countyName = feature.properties.County || feature.properties.NAME || feature.properties.county || "Area Details";
+        layer.bindPopup(countyName);
+      }
+
+      function loadStateBorders() {
+        fetch('{{ url_for("states_data_api") }}')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Failed to load state data. Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(stateData => {
+            if (stateData && stateData.features) {
+              stateLayer = L.geoJson(stateData, {
+                style: stateBorderStyle,
+                interactive: false,
+                onEachFeature: function (feature, layer) {
+                  const stateName = feature.properties.NAME || feature.properties.name || "State Border";
+                  layer.bindPopup(stateName, { sticky: false });
+                  layer.on('click', function (e) { L.DomEvent.stopPropagation(e); });
+                }
+              }).addTo(map);
+
+              stateLayer.bringToFront();
+              console.log("State borders loaded successfully.");
+            } else {
+              console.warn('State GeoJSON data is empty or invalid or has no features.');
+            }
+          })
+          .catch(error => {
+            console.error('Error loading state border data:', error);
+          });
+      }
+
+      fetch('{{ url_for("data_api") }}')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Failed to load map data. Server responded with HTTP status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (!data || !data.features || data.features.length === 0) {
+            console.warn('GeoJSON data is empty or invalid. Check server console for file load errors.');
+            document.getElementById('info-panel').innerHTML = `<h3 style="color: orange;">Map Data Missing</h3>
+                        <p>The server loaded an empty dataset. Check if <code>xtoll.geojson</code> exists and is valid GeoJSON.</p>`;
+            return;
+          }
+
+          let min = Infinity;
+          let max = -Infinity;
+          data.features.forEach(feature => {
+            const val = parseFloat(feature.properties[VARIABLE_KEY]);
+            if (!isNaN(val)) {
+              if (val < min) min = val;
+              if (val > max) max = val;
+            }
+          });
+
+          dataMin = min;
+          dataMax = max;
+          console.log(`Calculated Data Range for ${VARIABLE_KEY}: Min=${dataMin.toFixed(2)}, Max=${dataMax.toFixed(2)}`);
+
+
+          // 1. Add County Data Layer
+          geojsonLayer = L.geoJson(data, {
+            style: defaultStyle,
+            onEachFeature: onEachFeature
+          }).addTo(map);
+
+          // 2. Add State Border Layer (called after county layer)
+          loadStateBorders();
+
+
+          try {
+            const bounds = geojsonLayer.getBounds();
+            if (bounds.isValid()) {
+              map.fitBounds(bounds);
+              console.log("Map zoomed to GeoJSON bounds successfully.");
+            } else {
+              map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+            }
+          } catch (e) {
+            console.error("Error setting map bounds. Falling back:", e);
+            map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+          }
+
+        })
+        .catch(error => {
+          console.error('Error loading complete map data:', error);
+          document.getElementById('info-panel').innerHTML = `<h3 style="color: red;">Map Error: Data Layer Failed</h3>
+                        <p><strong>Reason:</strong> ${error.message}</p>
+                        <p>Ensure your <code>xtoll.geojson</code> file is in the server root and contains valid GeoJSON data.</p>`;
+        });
+    });
+
+    // Important: Re-initialize Leaflet map size after layout changes
+    window.addEventListener('resize', function () {
+      if (typeof map !== 'undefined') {
+        map.invalidateSize();
+      }
+    });
+  </script>
+
+</body>
+
+</html>

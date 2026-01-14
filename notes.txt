@@ -1,0 +1,7 @@
+XToll Discussion: January 13, 2026
+
+- replicate ArcGIS version to be nicer with downloadable data
+- maintain temporal graphs and event-specific breakdown
+- see Yusuf's example (https://church-closing-dashboard.vercel.app/)
+- communication team wants highlight as way to communicate science
+- goal to have something ready by February 1 for communication team

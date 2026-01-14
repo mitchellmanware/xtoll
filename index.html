@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>XToll: eXtreme-weather Toll Tracker</title>
+  <style>
+    .header-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .content-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: left;
+      padding: 0 5%;
+    }
+
+    .main-title {
+      font-size: 2.5em;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      font-size: 1.1em;
+      margin-top: -10px;
+    }
+
+    .body-content {
+      margin-top: 15px;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    .italic {
+      font-style: italic;
+    }
+
+    .map-link-container {
+      margin-top: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+
+    .map-link-container h3 {
+      margin-top: 0;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .map-list {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin: 15px auto 0;
+    }
+
+    .map-list l1 a {
+      display: block;
+      padding: 10px 15px;
+      background-color: #552a8f;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .map-list l1 a:hover {
+      background-color: #552a8f;
+    }
+
+    .map-list l2 a {
+      display: block;
+      padding: 10px 15px;
+      background-color: #a53603;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .map-list l2 a:hover {
+      background-color: #a53603;
+    }
+
+    .map-list l3 a {
+      display: block;
+      padding: 10px 15px;
+      background-color: #9b010e;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .map-list l3 a:hover {
+      background-color: #9b010e;
+    }
+
+    .map-list l4 a {
+      display: block;
+      padding: 10px 15px;
+      background-color: #066335;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .map-list l4 a:hover {
+      background-color: #066335;
+    }
+
+    .map-list l5 a {
+      display: block;
+      padding: 10px 15px;
+      background-color: #626262;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .map-list l5 a:hover {
+      background-color: #626262;
+    }
+
+    .map-list li a {
+      display: block;
+      padding: 10px 15px;
+      background-color: #1e3866;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .map-list li a:hover {
+      background-color: #1e3866;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content-wrapper">
+
+    <div class="header-container">
+      <h1 class="main-title">XToll: eXtreme-weather Toll Tracker</h1>
+      <div class="subtitle">
+        <a href="https://medicine.yale.edu/lab/kaichen/">Climate, Health, and Environment Nexus (CHEN) Lab</a> | <a
+          href="https://ysph.yale.edu/yale-center-on-climate-change-and-health/"> Yale Center on Climate Change and
+          Health</a>
+      </div>
+      <p>Mitchell Manware, MPH*, Lingzhi Chu, PhD*, Ying Hu, PhD, Jennifer Marlon, PhD,<br> Anthony Leiserowitz, PhD,
+        Kai
+        Chen, PhD†</p>
+    </div>
+
+    <p>
+      The following application displays the data and results associated with the <span
+        class="bold italic">Misperception of
+        Extreme Weather
+        Event Mortality
+        Risk in the United States</span> manuscript, a forthcoming research letter from the CHENLab and <a
+        href="https://climatecommunication.yale.edu/">Yale Program on
+        Climate
+        Change Communication (YPCCC)</a>.
+    </p>
+    <p>
+      The analysis aims to describe and quantify the gap between percieved and actual risk of mortality due to extreme
+      weather in United States' counties.
+      The extreme weather events inlcude wildfire smoke, heat, flood, and drought, stemming from multiple previous
+      CHENLab publications (see references).
+      Cumulative mortality rate is calculated by summing the individual event-specific mortality rates.
+      Public percpetion data, including the percentage of adults who think that global warming "will harm me personally"
+      and "is happening", come from the YPCCC's <a
+        href="https://climatecommunication.yale.edu/visualizations-data/ycom-us/">Yale Climate Opinion Maps
+        2024</a>.
+    </p>
+
+    <div class="map-link-container">
+      <h3>View Interactive Misperception Gap Maps by Extreme Weather Event:</h3>
+      <ul class="map-list">
+        <l1><a href="{{ url_for('map_page_renderer', variable_name='gap_all') }}">Total</a></l1>
+        <l2><a href="{{ url_for('map_page_renderer', variable_name='gap_smoke') }}">Wildfire Smoke</a></l2>
+        <l3><a href="{{ url_for('map_page_renderer', variable_name='gap_heat') }}">Heat</a></l3>
+        <l4><a href="{{ url_for('map_page_renderer', variable_name='gap_flood') }}">Flood</a></l4>
+        <l5><a href="{{ url_for('map_page_renderer', variable_name='gap_drought') }}">Drought</a></l5>
+      </ul>
+    </div>
+    <div class="map-link-container">
+      <h3>The data associated with this analysis is publicly available:</h3>
+      <ul class="map-list">
+        <li><a href="{{ url_for('variables_page_renderer') }}">Variable Metadata</a></li>
+        <li><a href="{{ url_for('data_api') }}">View</a></li>
+        <li><a href="{{ url_for('data_api') }}" download="xtoll_data.geojson">Download (GeoJSON)</a></li>
+      </ul>
+    </div>
+    <h2>References</h2>
+    <span class="bold">Wildfire Smoke PM2.5</span><br>
+    Y. Ma, E. Zang, Y. Liu, J. Wei, Y. Lu, H. M. Krumholz, M. L. Bell, K. Chen, Long-term exposure to wildland fire
+    smoke PM2.5 and mortality in the contiguous United States. Proceedings of the National Academy of Sciences 121,
+    e2403960121 (2024).<br><br>
+
+    <span class="bold">Heat and Cold</span><br>
+    L. Chu, R. Dubrow, K. Chen. Heat- and cold-related mortality burden in the United States from 2000 to 2020.
+    (Accepted)<br><br>
+
+    <span class="bold">Drought</span><br>
+    Hu, Y., Chu, L., Wang, P., Abadi, A.M., Qiu, M., and Chen, K. (2025). Mortality Attributable to Drought, Wildfire
+    Smoke, and Their Concurrent Added Effects in the Contiguous United States. medRxiv, 2025.09.24.25336547.
+    10.1101/2025.09.24.25336547.<br><br>
+
+    <span class="bold">Flood</span><br>
+    L. Chu, J. L. Warren, E. S. Spatz, S. Lowe, Y. Lu, X. Ma, J. S. Ross, H. M. Krumholz, K. Chen, Floods and
+    cause-specific mortality in the United States applying a triply robust approach. Nature Communications 16, 2853
+    (2025).<br><br>
+    <p>*Equal contribution; †Corresponding author</p>
+  </div>
+</body>
+
+</html>
