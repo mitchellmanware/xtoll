@@ -121,13 +121,13 @@
   <div class="flex flex-col lg:flex-row flex-1">
 
     <!-- Left Sidebar -->
-    <aside class="lg:w-64 sidebar p-6 flex flex-col gap-1">
+    <aside class="lg:w-64 sidebar p-6 flex flex-col gap-2">
       <div>
         <div class="text-3xl font-bold mb-2 yale-font">Yale</div>
-        <div class="h-px bg-white opacity-30 w-full mb-6"></div>
+        <div class="h-px bg-white opacity-30 w-full mb-2"></div>
       </div>
 
-      <nav class="flex flex-col gap-1 text-sm opacity-90">
+      <nav class="flex flex-col gap-2 text-sm opacity-90">
         <div class="font-bold uppercase tracking-wider text-xs opacity-60">Select Extreme Weather Event</div>
         <select id="variable-selector"
           class="bg-white/10 border border-white/20 rounded p-2 text-white focus:outline-none focus:ring-1 focus:ring-white/50 cursor-pointer">
@@ -138,21 +138,29 @@
           <option value="perc_drought" class="text-gray-800">Drought</option>
         </select>
 
-        <div class="mt-8 font-bold uppercase tracking-wider text-xs opacity-60">Instructions</div>
+        <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">Instructions</div>
         <p class="text-xs leading-relaxed">
           Click on a county to view it's national rankings for wildfire smoke-, heat-, cold-, drought-, and
           flood-related and total extreme weather event-related mortality in the "County Profile". A selection will
           update the "Excess Mortality Rate Ranking (National)" bar chart, and "Dollars Lost to Extreme Weather-Related
           Mortality" plot to
           state-specific values based on the
-          state in which the county is located. State values are used for calculating dollars lost to protect
-          potentially identifiable health outcomes at the county level.
+          state in which the county is located.
           <br><br>
           The mortality rate rankings data can be downloaded by selecting the "Download (GeoJSON)" link at the
           bottom of the sidebar.
         </p>
 
-        <div class="mt-8 font-bold uppercase tracking-wider text-xs opacity-60">References</div>
+        <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">Monetary Calculations</div>
+        <p class="text-xs leading-relaxed">
+          Dollars lost to extreme weather-related events were calculated using the U.S. Environmental Protection
+          Agency's <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation"
+            class="hover:underline" target="_blank">Value of Statistical Life (VSL)</a>.
+          Losses are calculated at the state level to protect potentially identifiable health information at the county
+          level.
+        </p>
+
+        <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">References</div>
         <p class="text-xs leading-relaxed">
           See the following publications for more information on the methods used to estimate the county-level extreme
           weather event mortality rates used for these rankings.
@@ -174,7 +182,9 @@
             al., 2025(b)</a>
         </p>
 
-        <div class="mt-8 font-bold uppercase tracking-wider text-xs opacity-60">Data</div>
+
+
+        <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">Data</div>
         <p class="text-xs leading-relaxed">
           <a href="/download/xtoll2.geojson" class="hover:underline" download>Download (GeoJSON)</a>
         </p>
@@ -185,9 +195,9 @@
     <!-- Main Dashboard Area -->
     <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
 
-      <section class="mb-10">
-        <div class="flex flex-col items-center text-center mb-10">
-          <h1 id="dashboard-title" class="text-3xl font-bold text-gray-800 mb-2">XToll: eXtreme-weather Toll
+      <section class="mb-4">
+        <div class="flex flex-col items-center text-center mb-4">
+          <h1 id="dashboard-title" class="text-4xl font-bold text-gray-800 mb-1">XToll: eXtreme-weather Toll
             Tracker in the contiguous United States</h1>
           <p class="text-md font-bold text-gray-600">
             <a href="https://medicine.yale.edu/lab/kaichen/" class="hover:underline" target="_blank">Climate, Health,
@@ -199,7 +209,7 @@
           <span class="text-sm font-bold text-gray-600">Last Updated: January 2026</span>
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-2">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
           <!-- Map Container -->
           <div class="xl:col-span-2 chart-card relative">
             <div id="loading-overlay"
@@ -214,7 +224,7 @@
           </div>
 
           <!-- Right Panel: County Profile -->
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-4">
             <div class="chart-card">
               <h3 id="county-profile-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">County Profile</h3>
               <div id="county-profile-content" class="overflow-y-auto max-h-[500px]">
@@ -226,9 +236,10 @@
       </section>
 
       <!-- Bottom Section -->
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="chart-card">
-          <h3 id="trends-chart-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">Annual Monetary Losses</h3>
+          <h3 id="trends-chart-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">Dollars Lost to Extreme
+            Weather-Related Mortality</h3>
           <div style="height: 300px;">
             <canvas id="trendsChart"></canvas>
           </div>
@@ -310,7 +321,7 @@
           labels: [],
           datasets: [
             {
-              label: 'Drought Loss',
+              label: 'Drought',
               data: [],
               borderColor: '#feb24c',
               backgroundColor: 'rgba(254, 178, 76, 0.1)',
@@ -318,7 +329,7 @@
               tension: 0.4
             },
             {
-              label: 'Flood Loss',
+              label: 'Flood',
               data: [],
               borderColor: '#4575b4',
               backgroundColor: 'rgba(69, 117, 180, 0.1)',
@@ -326,7 +337,7 @@
               tension: 0.4
             },
             {
-              label: 'Smoke Loss',
+              label: 'Smoke',
               data: [],
               borderColor: '#bd0026',
               backgroundColor: 'rgba(189, 0, 38, 0.1)',
@@ -346,7 +357,7 @@
             y: {
               beginAtZero: true,
               grid: { borderDash: [2, 2] },
-              title: { display: true, text: 'Monetary Value' }
+              title: { display: true, text: 'Millions of Dollars (USD)' }
             },
             x: {
               title: { display: true, text: 'Year' }
@@ -439,18 +450,20 @@
       const stateName = props.State;
 
       // Update dynamic titles
-      document.getElementById('county-profile-title').innerText = `${countyName}, ${stateName} Profile`;
-      document.getElementById('ranking-chart-title').innerText = `Percentiles - ${countyName}, ${stateName}`;
+      document.getElementById('county-profile-title').innerText = `County Profile - ${countyName}, ${stateName}`;
+      document.getElementById('ranking-chart-title').innerText = `Excess Mortality Rate Ranking (National) - ${countyName}, ${stateName}`;
 
       const profileContent = document.getElementById('county-profile-content');
       let tableHtml = `<table class="profile-table w-full">
                 <tbody>`;
 
-      const priorityKeys = ['County', 'State', 'GEOID', 'perc_all', 'perc_smoke', 'perc_heat', 'perc_flood', 'perc_drought'];
+      const priorityKeys = ['County', 'State', 'GEOID', 'Region', 'Division', 'perc_all', 'perc_smoke', 'perc_heat', 'perc_flood', 'perc_drought'];
       const labels = {
         'County': 'County',
         'State': 'State',
         'GEOID': 'GEOID',
+        'Region': 'Region',
+        'Division': 'Division',
         'perc_all': 'Total Percentile',
         'perc_smoke': 'Wildfire Smoke Percentile',
         'perc_heat': 'Heat Percentile',
@@ -487,7 +500,7 @@
       if (!mortalityData || mortalityData.length === 0 || !state) return;
 
       // Update the chart title with the state name
-      document.getElementById('trends-chart-title').innerText = `Annual Monetary Losses - ${state}`;
+      document.getElementById('trends-chart-title').innerText = `Dollars Lost to Extreme Weather-Related Mortality - ${state}`;
 
       const stateData = mortalityData.filter(d =>
         d.State === state || d.STATE === state || d.state === state
@@ -496,13 +509,13 @@
       if (stateData.length === 0) return;
 
       trendsChart.data.labels = stateData.map(d => d.Year);
-      trendsChart.data.datasets[0].label = `Drought Loss`;
+      trendsChart.data.datasets[0].label = `Drought`;
       trendsChart.data.datasets[0].data = stateData.map(d => d.monetary_drought || 0);
 
-      trendsChart.data.datasets[1].label = `Flood Loss`;
+      trendsChart.data.datasets[1].label = `Flood`;
       trendsChart.data.datasets[1].data = stateData.map(d => d.monetary_flood || 0);
 
-      trendsChart.data.datasets[2].label = `Smoke Loss`;
+      trendsChart.data.datasets[2].label = `Smoke`;
       trendsChart.data.datasets[2].data = stateData.map(d => d.monetary_smoke || 0);
 
       trendsChart.update();
