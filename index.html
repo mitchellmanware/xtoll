@@ -124,14 +124,14 @@
       </div>
 
       <nav class="flex flex-col gap-4 text-sm opacity-90">
-        <div class="font-bold uppercase tracking-wider text-xs opacity-60">Select Variable</div>
+        <div class="font-bold uppercase tracking-wider text-xs opacity-60">Select Extreme Weather Event</div>
         <select id="variable-selector"
           class="bg-white/10 border border-white/20 rounded p-2 text-white focus:outline-none focus:ring-1 focus:ring-white/50 cursor-pointer">
-          <option value="perc_all" class="text-gray-800">Total Percentile</option>
-          <option value="perc_smoke" class="text-gray-800">Wildfire Smoke Percentile</option>
-          <option value="perc_heat" class="text-gray-800">Heat Percentile</option>
-          <option value="perc_flood" class="text-gray-800">Flood Percentile</option>
-          <option value="perc_drought" class="text-gray-800">Drought Percentile</option>
+          <option value="perc_all" class="text-gray-800">Total</option>
+          <option value="perc_smoke" class="text-gray-800">Wildfire Smoke</option>
+          <option value="perc_heat" class="text-gray-800">Heat</option>
+          <option value="perc_flood" class="text-gray-800">Flood</option>
+          <option value="perc_drought" class="text-gray-800">Drought</option>
         </select>
 
         <div class="mt-8 font-bold uppercase tracking-wider text-xs opacity-60">About this project</div>
@@ -191,7 +191,7 @@
       <!-- Bottom Section -->
       <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="chart-card">
-          <h3 class="text-lg font-bold mb-4 yale-font border-b pb-2">Mortality Trends Over Time</h3>
+          <h3 class="text-lg font-bold mb-4 yale-font border-b pb-2">Annual Monetary Losses</h3>
           <div style="height: 300px;">
             <canvas id="trendsChart"></canvas>
           </div>
@@ -214,9 +214,12 @@
     let statesLayer;
     let map;
     let trendsChart, rankingChart;
+    let mortalityData = [];
+    let currentSelectedState = null;
 
     // Choropleth Colors (Blue-Yellow-Red Hotspot scale)
     function getColor(d) {
+      if (d === null || d === undefined) return '#d1d5db'; // Grey for missing data
       return d > 90 ? '#bd0026' : // Dark Red (Extreme)
         d > 75 ? '#f03b20' : // Red
           d > 60 ? '#feb24c' : // Orange/Yellow
@@ -227,7 +230,7 @@
     }
 
     function style(feature) {
-      const val = feature.properties[currentVariable] || 0;
+      const val = feature.properties[currentVariable];
       return {
         fillColor: getColor(val),
         weight: 0.5,
@@ -255,6 +258,7 @@
           '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
           grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
       }
+      div.innerHTML += '<br><i style="background:#d1d5db"></i> Missing Data';
       return div;
     };
     legend.addTo(map);
@@ -264,21 +268,51 @@
       trendsChart = new Chart(ctx1, {
         type: 'line',
         data: {
-          labels: ['2005', '2008', '2011', '2014', '2017', '2020'],
-          datasets: [{
-            label: 'Excess Mortality',
-            data: [120, 150, 140, 180, 170, 210],
-            borderColor: '#00356b',
-            backgroundColor: 'rgba(0, 53, 107, 0.1)',
-            fill: true,
-            tension: 0.4
-          }]
+          labels: [],
+          datasets: [
+            {
+              label: 'Drought Loss',
+              data: [],
+              borderColor: '#feb24c',
+              backgroundColor: 'rgba(254, 178, 76, 0.1)',
+              fill: false,
+              tension: 0.4
+            },
+            {
+              label: 'Flood Loss',
+              data: [],
+              borderColor: '#4575b4',
+              backgroundColor: 'rgba(69, 117, 180, 0.1)',
+              fill: false,
+              tension: 0.4
+            },
+            {
+              label: 'Smoke Loss',
+              data: [],
+              borderColor: '#bd0026',
+              backgroundColor: 'rgba(189, 0, 38, 0.1)',
+              fill: false,
+              tension: 0.4
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true, grid: { borderDash: [2, 2] } } }
+          plugins: {
+            legend: { display: true, position: 'top' },
+            tooltip: { mode: 'index', intersect: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { borderDash: [2, 2] },
+              title: { display: true, text: 'Monetary Value' }
+            },
+            x: {
+              title: { display: true, text: 'Year' }
+            }
+          }
         }
       });
 
@@ -305,24 +339,24 @@
     async function loadData() {
       const loadingOverlay = document.getElementById('loading-overlay');
       try {
-        // 1. Load States Overlay
-        const statesRes = await fetch('/states.geojson');
-        if (statesRes.ok) {
-          const statesData = await statesRes.json();
-          statesLayer = L.geoJSON(statesData, {
-            style: {
-              color: 'black',
-              weight: 1.5,
-              fillOpacity: 0,
-              interactive: false
-            }
-          }).addTo(map);
+        // 1. Load Mortality Trend Data
+        const mortRes = await fetch('/mortality_data');
+        if (mortRes.ok) {
+          mortalityData = await mortRes.json();
+          console.log('Trend data loaded:', mortalityData.length, 'records');
         }
 
-        // 2. Load Main Data
+        // 2. Load Main Data (xtoll2.geojson)
         const response = await fetch('/xtoll2.geojson');
         if (!response.ok) throw new Error('Could not load xtoll2.geojson');
-        const data = await response.json();
+        const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.error("JSON Parse Error:", e);
+          throw new Error("The xtoll2.geojson file is not a valid JSON.");
+        }
 
         geojsonLayer = L.geoJSON(data, {
           style: style,
@@ -331,12 +365,27 @@
               mouseover: (e) => { e.target.setStyle({ fillOpacity: 0.9, weight: 2 }); },
               mouseout: (e) => { e.target.setStyle({ fillOpacity: 0.7, weight: 0.5 }); },
               click: (e) => {
-                map.fitBounds(e.target.getBounds());
+                // Removed automatic zoom (map.fitBounds) as per user request
                 updateDashboard(feature.properties);
               }
             });
           }
         }).addTo(map);
+
+        // 3. Load States Overlay (Ensure it's on top)
+        const statesRes = await fetch('/states.geojson');
+        if (statesRes.ok) {
+          const statesData = await statesRes.json();
+          statesLayer = L.geoJSON(statesData, {
+            style: {
+              color: 'black',
+              weight: 2,
+              fillOpacity: 0,
+              interactive: false
+            }
+          }).addTo(map);
+          statesLayer.bringToFront();
+        }
 
         if (data.features.length > 0) map.fitBounds(geojsonLayer.getBounds());
         loadingOverlay.style.display = 'none';
@@ -348,38 +397,36 @@
     }
 
     function updateDashboard(props) {
-      // Update Dashboard Title
-      const countyName = props.County || 'Unknown County';
+      const countyName = props.County;
+      const stateName = props.State;
       document.getElementById('dashboard-title').innerText = countyName + ' Overview';
 
-      // Update County Profile Table
       const profileContent = document.getElementById('county-profile-content');
       let tableHtml = `<table class="profile-table w-full">
                 <tbody>`;
 
-      // Filter and display relevant properties
-      const displayProps = {
-        'State': props.State,
-        'County': props.County,
-        'GEOID': props.GEOID,
-        'Region': props.Region,
-        'Division': props.Division,
-        'Total Mortality Percentile': props.perc_all,
-        'Wildfire Smoke Percentile': props.perc_smoke,
-        'Heat Percentile': props.perc_heat,
-        'Flood Percentile': props.perc_flood,
-        'Drought Percentile': props.perc_drought
+      const priorityKeys = ['County', 'State', 'GEOID', 'perc_all', 'perc_smoke', 'perc_heat', 'perc_flood', 'perc_drought'];
+      const labels = {
+        'County': 'County Name',
+        'STATE_NAME': 'State',
+        'GEOID': 'GEOID',
+        'perc_all': 'Total Percentile',
+        'perc_smoke': 'Wildfire Smoke Percentile',
+        'perc_heat': 'Heat Percentile',
+        'perc_flood': 'Flood Percentile',
+        'perc_drought': 'Drought Percentile'
       };
 
-      for (const [label, value] of Object.entries(displayProps)) {
-        if (value !== undefined) {
-          tableHtml += `<tr><td><strong>${label}</strong></td><td>${value}</td></tr>`;
+      priorityKeys.forEach(key => {
+        if (props[key] !== undefined && props[key] !== null) {
+          let val = props[key];
+          if (key === 'economic_impact' && !isNaN(val)) val = `$${val}M`;
+          tableHtml += `<tr><td><strong>${labels[key] || key}</strong></td><td>${val}</td></tr>`;
         }
-      }
+      });
       tableHtml += `</tbody></table>`;
       profileContent.innerHTML = tableHtml;
 
-      // Update Charts
       rankingChart.data.datasets[0].data = [
         props.perc_all || 0,
         props.perc_smoke || 0,
@@ -388,14 +435,41 @@
         props.perc_drought || 0
       ];
       rankingChart.update();
+
+      // Update Trends Chart only if state changes
+      if (stateName !== currentSelectedState) {
+        currentSelectedState = stateName;
+        updateTrendsChart(stateName);
+      }
     }
 
-    // Variable Selector Listener
+    function updateTrendsChart(state) {
+      if (!mortalityData || mortalityData.length === 0 || !state) return;
+      const stateData = mortalityData.filter(d =>
+        d.State === state || d.STATE === state || d.state === state
+      ).sort((a, b) => a.Year - b.Year);
+
+      if (stateData.length === 0) return;
+
+      trendsChart.data.labels = stateData.map(d => d.Year);
+      trendsChart.data.datasets[0].label = `Drought`;
+      trendsChart.data.datasets[0].data = stateData.map(d => d.monetary_drought || 0);
+
+      trendsChart.data.datasets[1].label = `Flood`;
+      trendsChart.data.datasets[1].data = stateData.map(d => d.monetary_flood || 0);
+
+      trendsChart.data.datasets[2].label = `Smoke`;
+      trendsChart.data.datasets[2].data = stateData.map(d => d.monetary_smoke || 0);
+
+      trendsChart.update();
+    }
+
     document.getElementById('variable-selector').addEventListener('change', (e) => {
       currentVariable = e.target.value;
       if (geojsonLayer) {
         geojsonLayer.setStyle(style);
       }
+      // Note: Trends chart no longer changes based on variable selection, only state selection.
     });
 
     initCharts();

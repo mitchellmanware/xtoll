@@ -1,4 +1,7 @@
-from flask import Flask, render_template, send_from_directory
+import os
+
+import pandas as pd
+from flask import Flask, jsonify, render_template, send_from_directory
 
 app = Flask(__name__, template_folder=".", static_folder=".", static_url_path="")
 
@@ -9,13 +12,38 @@ def index():
     return render_template("index.html")
 
 
-# Explicit route to serve the GeoJSON file with correct MIME type
+# Explicit route to serve the GeoJSON files with correct MIME type
 @app.route("/xtoll2.geojson")
 def get_geojson():
     try:
-        return send_from_directory(".", "xtoll2.geojson", mimetype="application/json")
+        # Using explicit response to ensure UTF-8 encoding
+        with open("xtoll2.geojson", "r", encoding="utf-8") as f:
+            content = f.read()
+        return app.response_class(content, mimetype="application/json")
+    except Exception as e:
+        return f"Error reading xtoll2.geojson: {str(e)}", 404
+
+
+@app.route("/states.geojson")
+def get_states():
+    try:
+        return send_from_directory(".", "states.geojson", mimetype="application/json")
     except Exception as e:
         return str(e), 404
+
+
+@app.route("/mortality_data")
+def get_mortality_data():
+    try:
+        if os.path.exists("df_mortality.csv"):
+            df = pd.read_csv("df_mortality.csv")
+            # Replace NaN values with None, which jsonify converts to null
+            df = df.where(pd.notnull(df), None)
+            return jsonify(df.to_dict(orient="records"))
+        else:
+            return "File not found", 404
+    except Exception as e:
+        return str(e), 500
 
 
 if __name__ == "__main__":
