@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XToll: eXtreme-weather Toll Tracker</title>
+  <title>XToll: eXtreme-weather Toll Tracker in the contiguous United States</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -120,7 +120,6 @@
       <div>
         <div class="text-3xl font-bold mb-2 yale-font">Yale</div>
         <div class="h-px bg-white opacity-30 w-full mb-6"></div>
-        <h1 class="text-xl font-semibold leading-tight yale-font">XToll: eXtreme-weather Toll Tracker</h1>
       </div>
 
       <nav class="flex flex-col gap-4 text-sm opacity-90">
@@ -153,8 +152,10 @@
       <section class="mb-10">
         <div class="flex justify-between items-end mb-6">
           <div>
-            <h2 id="dashboard-title" class="text-2xl font-bold text-gray-800 yale-font">National Overview</h2>
-            <p class="text-sm text-gray-500">Data source: Yale Research Center Data Port</p>
+            <h1 id="dashboard-title" class="text-2xl font-bold text-gray-800 yale-font">XToll: eXtreme-weather Toll
+              Tracker in the contiguous United States</h1>
+            <p class="text-sm text-gray-500">Climate, Health, and Environment Nexus (CHEN) Lab | Yale Center on Climate
+              Change and Health (YCCCH) </p>
           </div>
           <div class="text-right">
             <span class="text-xs font-bold text-gray-400 uppercase">Last Updated</span>
@@ -179,7 +180,7 @@
           <!-- Right Panel: County Profile -->
           <div class="flex flex-col gap-6">
             <div class="chart-card">
-              <h3 class="text-lg font-bold mb-4 yale-font border-b pb-2">County Profile</h3>
+              <h3 id="county-profile-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">County Profile</h3>
               <div id="county-profile-content" class="overflow-y-auto max-h-[500px]">
                 <p class="text-sm text-gray-500 italic">Click a county on the map to view its profile.</p>
               </div>
@@ -197,7 +198,8 @@
           </div>
         </div>
         <div class="chart-card">
-          <h3 class="text-lg font-bold mb-4 yale-font border-b pb-2">All Percentiles Comparison</h3>
+          <h3 id="ranking-chart-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">All Percentiles Comparison
+          </h3>
           <div style="height: 300px;">
             <canvas id="rankingChart"></canvas>
           </div>
@@ -365,7 +367,6 @@
               mouseover: (e) => { e.target.setStyle({ fillOpacity: 0.9, weight: 2 }); },
               mouseout: (e) => { e.target.setStyle({ fillOpacity: 0.7, weight: 0.5 }); },
               click: (e) => {
-                // Removed automatic zoom (map.fitBounds) as per user request
                 updateDashboard(feature.properties);
               }
             });
@@ -399,7 +400,10 @@
     function updateDashboard(props) {
       const countyName = props.County;
       const stateName = props.State;
-      document.getElementById('dashboard-title').innerText = countyName + ' Overview';
+
+      // Update dynamic titles
+      document.getElementById('county-profile-title').innerText = `County Profile - ${countyName}, ${stateName}`;
+      document.getElementById('ranking-chart-title').innerText = `Mortality Rate Percentiles (National) - ${countyName}, ${stateName}`;
 
       const profileContent = document.getElementById('county-profile-content');
       let tableHtml = `<table class="profile-table w-full">
@@ -407,8 +411,8 @@
 
       const priorityKeys = ['County', 'State', 'GEOID', 'perc_all', 'perc_smoke', 'perc_heat', 'perc_flood', 'perc_drought'];
       const labels = {
-        'County': 'County Name',
-        'STATE_NAME': 'State',
+        'County': 'County',
+        'State': 'State',
         'GEOID': 'GEOID',
         'perc_all': 'Total Percentile',
         'perc_smoke': 'Wildfire Smoke Percentile',
@@ -420,7 +424,6 @@
       priorityKeys.forEach(key => {
         if (props[key] !== undefined && props[key] !== null) {
           let val = props[key];
-          if (key === 'economic_impact' && !isNaN(val)) val = `$${val}M`;
           tableHtml += `<tr><td><strong>${labels[key] || key}</strong></td><td>${val}</td></tr>`;
         }
       });
@@ -446,8 +449,8 @@
     function updateTrendsChart(state) {
       if (!mortalityData || mortalityData.length === 0 || !state) return;
 
+      // Update the chart title with the state name
       document.getElementById('trends-chart-title').innerText = `Annual Monetary Losses - ${state}`;
-
 
       const stateData = mortalityData.filter(d =>
         d.State === state || d.STATE === state || d.state === state
@@ -456,13 +459,13 @@
       if (stateData.length === 0) return;
 
       trendsChart.data.labels = stateData.map(d => d.Year);
-      trendsChart.data.datasets[0].label = `Drought`;
+      trendsChart.data.datasets[0].label = `Drought Loss`;
       trendsChart.data.datasets[0].data = stateData.map(d => d.monetary_drought || 0);
 
-      trendsChart.data.datasets[1].label = `Flood`;
+      trendsChart.data.datasets[1].label = `Flood Loss`;
       trendsChart.data.datasets[1].data = stateData.map(d => d.monetary_flood || 0);
 
-      trendsChart.data.datasets[2].label = `Smoke`;
+      trendsChart.data.datasets[2].label = `Smoke Loss`;
       trendsChart.data.datasets[2].data = stateData.map(d => d.monetary_smoke || 0);
 
       trendsChart.update();
@@ -473,7 +476,6 @@
       if (geojsonLayer) {
         geojsonLayer.setStyle(style);
       }
-      // Note: Trends chart no longer changes based on variable selection, only state selection.
     });
 
     initCharts();
