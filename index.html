@@ -133,15 +133,21 @@
           <option value="perc_drought" class="text-gray-800">Drought</option>
         </select>
 
-        <div class="mt-8 font-bold uppercase tracking-wider text-xs opacity-60">About this project</div>
+        <div class="mt-8 font-bold uppercase tracking-wider text-xs opacity-60">Instructions</div>
         <p class="text-xs leading-relaxed">
-          This project is a collaboration between Yale Center for Geospatial Solutions and Yale School of Public Health.
+          Click on a county to view it's national rankings for wildfire smoke-, heat-, cold-, drought-, and
+          flood-related and total extreme weather event-related mortality in the "County Profile". A selection will
+          update the "Excess Mortality Rate Ranking (National)" bar chart, and "Dollars Lost to Extreme Weather-Related
+          Mortality" plot to
+          state-specific values based on the
+          state in which the county is located. State values are used for calculating dollars lost to protect
+          potentially identifiable health outcomes at the county level.
+
+          The data can be downloaded by selecting the "Download data" link at the bottom of the sidebar.
         </p>
       </nav>
 
       <div class="mt-auto pt-8 flex flex-col gap-2 text-xs opacity-70">
-        <a href="#" class="hover:underline">Share to social media</a>
-        <a href="#" class="hover:underline">Export Report</a>
         <a href="#" class="hover:underline">Download data</a>
       </div>
     </aside>
@@ -198,7 +204,8 @@
           </div>
         </div>
         <div class="chart-card">
-          <h3 id="ranking-chart-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">All Percentiles Comparison
+          <h3 id="ranking-chart-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">Excess Mortality Rate
+            Ranking (National)
           </h3>
           <div style="height: 300px;">
             <canvas id="rankingChart"></canvas>
@@ -309,7 +316,7 @@
             y: {
               beginAtZero: true,
               grid: { borderDash: [2, 2] },
-              title: { display: true, text: 'Monetary Value' }
+              title: { display: true, text: 'Dollars (USD, millions)' }
             },
             x: {
               title: { display: true, text: 'Year' }
@@ -403,7 +410,7 @@
 
       // Update dynamic titles
       document.getElementById('county-profile-title').innerText = `County Profile - ${countyName}, ${stateName}`;
-      document.getElementById('ranking-chart-title').innerText = `Mortality Rate Percentiles (National) - ${countyName}, ${stateName}`;
+      document.getElementById('ranking-chart-title').innerText = `Excess Mortality Rate Ranking (National) - ${countyName}, ${stateName}`;
 
       const profileContent = document.getElementById('county-profile-content');
       let tableHtml = `<table class="profile-table w-full">
@@ -450,7 +457,7 @@
       if (!mortalityData || mortalityData.length === 0 || !state) return;
 
       // Update the chart title with the state name
-      document.getElementById('trends-chart-title').innerText = `Annual Monetary Losses - ${state}`;
+      document.getElementById('trends-chart-title').innerText = `Dollars Lost to Extreme Weather-Related Mortality - ${state}`;
 
       const stateData = mortalityData.filter(d =>
         d.State === state || d.STATE === state || d.state === state
