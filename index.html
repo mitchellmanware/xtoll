@@ -191,7 +191,7 @@
       <!-- Bottom Section -->
       <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="chart-card">
-          <h3 class="text-lg font-bold mb-4 yale-font border-b pb-2">Annual Monetary Losses</h3>
+          <h3 id="trends-chart-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">Annual Monetary Losses</h3>
           <div style="height: 300px;">
             <canvas id="trendsChart"></canvas>
           </div>
@@ -445,6 +445,10 @@
 
     function updateTrendsChart(state) {
       if (!mortalityData || mortalityData.length === 0 || !state) return;
+
+      document.getElementById('trends-chart-title').innerText = `Annual Monetary Losses - ${state}`;
+
+
       const stateData = mortalityData.filter(d =>
         d.State === state || d.STATE === state || d.state === state
       ).sort((a, b) => a.Year - b.Year);
