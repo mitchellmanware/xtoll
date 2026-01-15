@@ -1,7 +1,7 @@
 import os
 
 import pandas as pd
-from flask import Flask, jsonify, render_template, send_from_directory
+from flask import Flask, jsonify, render_template, send_file, send_from_directory
 
 app = Flask(__name__, template_folder=".", static_folder=".", static_url_path="")
 
@@ -44,6 +44,20 @@ def get_mortality_data():
             return "File not found", 404
     except Exception as e:
         return str(e), 500
+
+
+# Route to handle file downloads
+@app.route("/download/<filename>")
+def download_file(filename):
+    try:
+        # Security check: only allow specific files to be downloaded
+        allowed_files = ["xtoll2.geojson", "states.geojson", "df_mortality.csv"]
+        if filename in allowed_files:
+            return send_file(filename, as_attachment=True)
+        else:
+            return "File not authorized for download", 403
+    except Exception as e:
+        return f"Error downloading file: {str(e)}", 404
 
 
 if __name__ == "__main__":

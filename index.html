@@ -116,13 +116,13 @@
   <div class="flex flex-col lg:flex-row flex-1">
 
     <!-- Left Sidebar -->
-    <aside class="lg:w-64 sidebar p-6 flex flex-col gap-8">
+    <aside class="lg:w-64 sidebar p-6 flex flex-col gap-1">
       <div>
         <div class="text-3xl font-bold mb-2 yale-font">Yale</div>
         <div class="h-px bg-white opacity-30 w-full mb-6"></div>
       </div>
 
-      <nav class="flex flex-col gap-4 text-sm opacity-90">
+      <nav class="flex flex-col gap-1 text-sm opacity-90">
         <div class="font-bold uppercase tracking-wider text-xs opacity-60">Select Extreme Weather Event</div>
         <select id="variable-selector"
           class="bg-white/10 border border-white/20 rounded p-2 text-white focus:outline-none focus:ring-1 focus:ring-white/50 cursor-pointer">
@@ -142,14 +142,39 @@
           state-specific values based on the
           state in which the county is located. State values are used for calculating dollars lost to protect
           potentially identifiable health outcomes at the county level.
-
-          The data can be downloaded by selecting the "Download data" link at the bottom of the sidebar.
+          <br><br>
+          The mortality rate rankings data can be downloaded by selecting the "Download (GeoJSON)" link at the
+          bottom of the sidebar.
         </p>
-      </nav>
 
-      <div class="mt-auto pt-8 flex flex-col gap-2 text-xs opacity-70">
-        <a href="#" class="hover:underline">Download data</a>
-      </div>
+        <div class="mt-8 font-bold uppercase tracking-wider text-xs opacity-60">References</div>
+        <p class="text-xs leading-relaxed">
+          See the following publications for more information on the methods used to estimate the county-level extreme
+          weather event mortality rates used for these rankings.
+          <br><br>
+          Wildfire Smoke PM2.5:
+          <a href="https://doi.org/10.1073/pnas.2403960121" class="hover:underline" target="_blank">Ma et al., 2024</a>
+          <br>
+          Heat and Cold:
+          <a href="https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2841063" class="hover:underline"
+            target="_blank">Chu et al.,
+            2025(a)</a>
+          <br>
+          Drought:
+          <a href="https://doi.org/10.1101/2025.09.24.25336547" class="hover:underline" target="_blank">Hu et al.,
+            2025</a>
+          <br>
+          Flood:
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11930965/" class="hover:underline" target="_blank">Chu et
+            al., 2025(b)</a>
+        </p>
+
+        <div class="mt-8 font-bold uppercase tracking-wider text-xs opacity-60">Data</div>
+        <p class="text-xs leading-relaxed">
+          <a href="/download/xtoll2.geojson" class="hover:underline" download>Download (GeoJSON)</a>
+        </p>
+
+      </nav>
     </aside>
 
     <!-- Main Dashboard Area -->
@@ -176,7 +201,7 @@
               class="absolute inset-0 bg-white/80 z-[1000] flex items-center justify-center rounded">
               <div class="flex flex-col items-center">
                 <div class="w-10 h-10 border-4 border-yale-blue border-t-transparent rounded-full animate-spin mb-2">
-                </div>
+                </div>2
                 <p class="text-sm font-bold text-yale-blue">Loading Data...</p>
               </div>
             </div>
@@ -316,7 +341,7 @@
             y: {
               beginAtZero: true,
               grid: { borderDash: [2, 2] },
-              title: { display: true, text: 'Dollars (USD, millions)' }
+              title: { display: true, text: 'Monetary Value' }
             },
             x: {
               title: { display: true, text: 'Year' }
@@ -409,8 +434,8 @@
       const stateName = props.State;
 
       // Update dynamic titles
-      document.getElementById('county-profile-title').innerText = `County Profile - ${countyName}, ${stateName}`;
-      document.getElementById('ranking-chart-title').innerText = `Excess Mortality Rate Ranking (National) - ${countyName}, ${stateName}`;
+      document.getElementById('county-profile-title').innerText = `${countyName}, ${stateName} Profile`;
+      document.getElementById('ranking-chart-title').innerText = `Percentiles - ${countyName}, ${stateName}`;
 
       const profileContent = document.getElementById('county-profile-content');
       let tableHtml = `<table class="profile-table w-full">
@@ -457,7 +482,7 @@
       if (!mortalityData || mortalityData.length === 0 || !state) return;
 
       // Update the chart title with the state name
-      document.getElementById('trends-chart-title').innerText = `Dollars Lost to Extreme Weather-Related Mortality - ${state}`;
+      document.getElementById('trends-chart-title').innerText = `Annual Monetary Losses - ${state}`;
 
       const stateData = mortalityData.filter(d =>
         d.State === state || d.STATE === state || d.state === state
