@@ -123,12 +123,12 @@
     <!-- Left Sidebar -->
     <aside class="lg:w-80 sidebar p-4 flex flex-col gap-2">
       <div class="flex items-baseline gap-2 mb-2">
-        <div class="text-3xl yale-font">Yale</div>
-        <div class="text-md yale-font uppercase">School of Public Health</div>
+        <img src="yccch/svg/School-of-Public-Health-Center-on-Climate-Change-and-Health-Wordmark-white.svg"
+          alt="Yale Center on Climate Change and Health">
       </div>
 
       <nav class="flex flex-col gap-2 text-sm opacity-90">
-        <div class="font-bold uppercase tracking-wider text-xs opacity-60">Select Extreme Weather Event</div>
+        <div class="font-bold yale-font tracking-wider text-sm opacity-60">Select Extreme Weather Event</div>
         <select id="variable-selector"
           class="bg-white/10 border border-white/20 rounded p-2 text-white focus:outline-none focus:ring-1 focus:ring-white/50 cursor-pointer">
           <option value="perc_all" class="text-gray-800">Total</option>
@@ -138,8 +138,8 @@
           <option value="perc_drought" class="text-gray-800">Drought</option>
         </select>
 
-        <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">Instructions</div>
-        <p class="text-xs leading-relaxed">
+        <div class="mt-4 font-bold yale-font tracking-wider text-md opacity-60">Instructions</div>
+        <p class="text-sm yale-font leading-relaxed">
           Click on a county to view it's national rankings for wildfire smoke-, heat-, cold-, drought-, and
           flood-related and total extreme weather event-related mortality in the "County Profile". A selection will
           update the "Excess Mortality Rate Ranking (National)" bar chart, and "Dollars Lost to Extreme Weather-Related
@@ -151,16 +151,16 @@
           bottom of the sidebar.
         </p>
 
-        <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">Monetary Calculations</div>
-        <p class="text-xs leading-relaxed">
+        <div class="mt-4 font-bold yale-font tracking-wider text-md opacity-60">Monetary Calculations</div>
+        <p class="text-sm yale-font leading-relaxed">
           Dollars lost to extreme weather-related events were calculated using the U.S. Environmental Protection
           Agency's <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation"
             class="hover:underline" target="_blank">Value of Statistical Life (VSL)</a>.
           Losses are calculated at the state level to protect potentially identifiable health information at the county
           level.
         </p>
-        <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">Data</div>
-        <p class="text-xs leading-relaxed">
+        <div class="mt-4 font-bold yale-font tracking-wider text-md opacity-60">Data</div>
+        <p class="text-sm yale-font leading-relaxed">
           <a href="/download/xtoll2.geojson" class="hover:underline" download>Download (GeoJSON)</a>
         </p>
 
@@ -233,29 +233,35 @@
       <section class="grid grid-cols-1 lg:grid-cols-1 ">
         <div class="chart-card">
 
-          <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">References</div>
-          <p class="text-xs leading-relaxed">
+          <div class="text-xl font-bold mb-4 yale-font border-b pb-2">References</div>
+          <p class="text-md yale-font pb-2">
             See the following publications for more information on the methods used to estimate the county-level extreme
             weather event mortality rates used for these rankings.
             <br><br>
-            Wildfire Smoke PM2.5:<br>
-            Y. Ma, E. Zang, Y. Liu, J. Wei, Y. Lu, H. M. Krumholz, M. L. Bell, K. Chen, Long-term exposure to wildland
-            fire smoke PM2.5 and mortality in the contiguous United States. Proceedings of the National Academy of
-            Sciences 121, e2403960121 (2024).
-            <a href="https://doi.org/10.1073/pnas.2403960121" class="hover:underline" target="_blank">Link</a>
-            <br>
-            Heat and Cold:
+            <b>Wildfire Smoke PM2.5</b><br>
+            Ma, Y., Zang, E., Liu, Y., Wei, J., Lu, Y., Krumholz, H. M., Bell, M. L., & Chen, K. (2024). Long-term
+            exposure to wildland fire smoke PM<sub>2.5</sub> and mortality in the contiguous United States. Proceedings
+            of the National Academy of Sciences, 121(40), e2403960121. https://doi.org/doi:10.1073/pnas.2403960121
+            <a href="https://doi.org/10.1073/pnas.2403960121" class="hover:underline" target="_blank">[Link]</a>
+            <br><br>
+            <b>Heat and Cold</b><br>
+            Chu, L., Dubrow, R., & Chen, K. (2025). Heat- and Cold-Related Mortality Burden in the US From 2000 to 2020.
+            JAMA Network Open, 8(11), e2542269-e2542269. https://doi.org/10.1001/jamanetworkopen.2025.42269
             <a href="https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2841063" class="hover:underline"
-              target="_blank">Chu et al.,
-              2025(a)</a>
-            <br>
-            Drought:
-            <a href="https://doi.org/10.1101/2025.09.24.25336547" class="hover:underline" target="_blank">Hu et al.,
-              2025</a>
-            <br>
-            Flood:
-            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11930965/" class="hover:underline" target="_blank">Chu et
-              al., 2025(b)</a>
+              target="_blank">[Link]</a>
+            <br><br>
+            <b>Drought</b><br>
+            Hu, Y., Chu, L., Wang, P., Abadi, A. M., Qiu, M., & Chen, K. (2025). Mortality Attributable to Drought,
+            Wildfire Smoke, and Their Concurrent Added Effects in the Contiguous United States. medRxiv,
+            2025.2009.2024.25336547. https://doi.org/10.1101/2025.09.24.25336547
+            <a href="https://doi.org/10.1101/2025.09.24.25336547" class="hover:underline" target="_blank">[Link]</a>
+            <br><br>
+            <b>Flood</b><br>
+            Chu, L., Warren, J. L., Spatz, E. S., Lowe, S., Lu, Y., Ma, X., Ross, J. S., Krumholz, H. M., & Chen, K.
+            (2025). Floods and cause-specific mortality in the United States applying a triply robust approach. Nat
+            Commun, 16(1), 2853. https://doi.org/10.1038/s41467-025-58236-0
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11930965/" class="hover:underline"
+              target="_blank">[Link]</a>
           </p>
         </div>
       </section>
