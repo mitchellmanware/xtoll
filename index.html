@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Yale+Design:wght@400;700&family=Mallory:wght@300;400;700&display=swap');
 
@@ -35,6 +36,10 @@
     h3,
     .yale-font {
       font-family: 'Yale Design', serif;
+    }
+
+    .left-font {
+      font-family: 'Lora', serif;
     }
 
     .sidebar {
@@ -123,14 +128,13 @@
     <!-- Left Sidebar -->
     <aside class="lg:w-80 sidebar p-4 flex flex-col gap-2">
       <div class="flex items-baseline gap-2 mb-2">
-        <img src="yccch/svg/School-of-Public-Health-Center-on-Climate-Change-and-Health-Wordmark-white.svg"
-          alt="Yale Center on Climate Change and Health">
+        <img src="yccch/white.svg" alt="Yale Center on Climate Change and Health">
       </div>
 
       <nav class="flex flex-col gap-2 text-sm opacity-90">
-        <div class="font-bold yale-font tracking-wider text-sm opacity-60">Select Extreme Weather Event</div>
+        <div class="font-bold left-font tracking-wider text-sm opacity-60">Select Extreme Weather Event</div>
         <select id="variable-selector"
-          class="bg-white/10 border border-white/20 rounded p-2 text-white focus:outline-none focus:ring-1 focus:ring-white/50 cursor-pointer">
+          class="bg-white/10 left-font border border-white/20 rounded p-2 text-white focus:outline-none focus:ring-1 focus:ring-white/50 cursor-pointer">
           <option value="perc_all" class="text-gray-800">Total</option>
           <option value="perc_smoke" class="text-gray-800">Wildfire Smoke</option>
           <option value="perc_heat" class="text-gray-800">Heat</option>
@@ -138,8 +142,8 @@
           <option value="perc_drought" class="text-gray-800">Drought</option>
         </select>
 
-        <div class="mt-4 font-bold yale-font tracking-wider text-md opacity-60">Instructions</div>
-        <p class="text-sm yale-font leading-relaxed">
+        <div class="mt-4 font-bold left-font tracking-wider text-md opacity-60">Instructions</div>
+        <p class="text-sm left-font tracking-wider leading-relaxed">
           Click on a county to view it's national rankings for wildfire smoke-, heat-, cold-, drought-, and
           flood-related and total extreme weather event-related mortality in the "County Profile". A selection will
           update the "Excess Mortality Rate Ranking (National)" bar chart, and "Dollars Lost to Extreme Weather-Related
@@ -151,16 +155,16 @@
           bottom of the sidebar.
         </p>
 
-        <div class="mt-4 font-bold yale-font tracking-wider text-md opacity-60">Monetary Calculations</div>
-        <p class="text-sm yale-font leading-relaxed">
+        <div class="mt-4 font-bold left-font tracking-wider text-md opacity-60">Monetary Calculations</div>
+        <p class="text-sm left-font tracking-wider leading-relaxed">
           Dollars lost to extreme weather-related events were calculated using the U.S. Environmental Protection
           Agency's <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation"
             class="hover:underline" target="_blank">Value of Statistical Life (VSL)</a>.
           Losses are calculated at the state level to protect potentially identifiable health information at the county
           level.
         </p>
-        <div class="mt-4 font-bold yale-font tracking-wider text-md opacity-60">Data</div>
-        <p class="text-sm yale-font leading-relaxed">
+        <div class="mt-4 font-bold left-font tracking-wider text-md opacity-60">Data</div>
+        <p class="text-sm left-font tracking-wider leading-relaxed">
           <a href="/download/xtoll2.geojson" class="hover:underline" download>Download (GeoJSON)</a>
         </p>
 
