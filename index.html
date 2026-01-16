@@ -121,10 +121,10 @@
   <div class="flex flex-col lg:flex-row flex-1">
 
     <!-- Left Sidebar -->
-    <aside class="lg:w-64 sidebar p-6 flex flex-col gap-2">
-      <div>
-        <div class="text-3xl font-bold mb-2 yale-font">Yale</div>
-        <div class="h-px bg-white opacity-30 w-full mb-2"></div>
+    <aside class="lg:w-80 sidebar p-4 flex flex-col gap-2">
+      <div class="flex items-baseline gap-2 mb-2">
+        <div class="text-3xl yale-font">Yale</div>
+        <div class="text-md yale-font uppercase">School of Public Health</div>
       </div>
 
       <nav class="flex flex-col gap-2 text-sm opacity-90">
@@ -159,31 +159,6 @@
           Losses are calculated at the state level to protect potentially identifiable health information at the county
           level.
         </p>
-
-        <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">References</div>
-        <p class="text-xs leading-relaxed">
-          See the following publications for more information on the methods used to estimate the county-level extreme
-          weather event mortality rates used for these rankings.
-          <br><br>
-          Wildfire Smoke PM2.5:
-          <a href="https://doi.org/10.1073/pnas.2403960121" class="hover:underline" target="_blank">Ma et al., 2024</a>
-          <br>
-          Heat and Cold:
-          <a href="https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2841063" class="hover:underline"
-            target="_blank">Chu et al.,
-            2025(a)</a>
-          <br>
-          Drought:
-          <a href="https://doi.org/10.1101/2025.09.24.25336547" class="hover:underline" target="_blank">Hu et al.,
-            2025</a>
-          <br>
-          Flood:
-          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11930965/" class="hover:underline" target="_blank">Chu et
-            al., 2025(b)</a>
-        </p>
-
-
-
         <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">Data</div>
         <p class="text-xs leading-relaxed">
           <a href="/download/xtoll2.geojson" class="hover:underline" download>Download (GeoJSON)</a>
@@ -236,7 +211,7 @@
       </section>
 
       <!-- Bottom Section -->
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div class="chart-card">
           <h3 id="trends-chart-title" class="text-lg font-bold mb-4 yale-font border-b pb-2">Dollars Lost to Extreme
             Weather-Related Mortality</h3>
@@ -251,6 +226,37 @@
           <div style="height: 300px;">
             <canvas id="rankingChart"></canvas>
           </div>
+        </div>
+      </section>
+
+      <!-- References -->
+      <section class="grid grid-cols-1 lg:grid-cols-1 ">
+        <div class="chart-card">
+
+          <div class="mt-4 font-bold uppercase tracking-wider text-xs opacity-60">References</div>
+          <p class="text-xs leading-relaxed">
+            See the following publications for more information on the methods used to estimate the county-level extreme
+            weather event mortality rates used for these rankings.
+            <br><br>
+            Wildfire Smoke PM2.5:<br>
+            Y. Ma, E. Zang, Y. Liu, J. Wei, Y. Lu, H. M. Krumholz, M. L. Bell, K. Chen, Long-term exposure to wildland
+            fire smoke PM2.5 and mortality in the contiguous United States. Proceedings of the National Academy of
+            Sciences 121, e2403960121 (2024).
+            <a href="https://doi.org/10.1073/pnas.2403960121" class="hover:underline" target="_blank">Link</a>
+            <br>
+            Heat and Cold:
+            <a href="https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2841063" class="hover:underline"
+              target="_blank">Chu et al.,
+              2025(a)</a>
+            <br>
+            Drought:
+            <a href="https://doi.org/10.1101/2025.09.24.25336547" class="hover:underline" target="_blank">Hu et al.,
+              2025</a>
+            <br>
+            Flood:
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11930965/" class="hover:underline" target="_blank">Chu et
+              al., 2025(b)</a>
+          </p>
         </div>
       </section>
 
