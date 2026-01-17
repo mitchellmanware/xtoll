@@ -32,6 +32,14 @@ def get_states():
         return str(e), 404
 
 
+@app.route("/us.geojson")
+def get_us():
+    try:
+        return send_from_directory(".", "us.geojson", mimetype="application/json")
+    except Exception as e:
+        return str(e), 404
+
+
 @app.route("/mortality_data")
 def get_mortality_data():
     try:

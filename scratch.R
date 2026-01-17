@@ -22,3 +22,8 @@ xtoll$perc_drought <- round(
 head(xtoll)
 tail(xtoll)
 sf::st_write(xtoll, "xtoll2.geojson", delete_dsn = TRUE)
+
+states <- sf::st_read("states.geojson")
+us <- sf::st_union(states)
+plot(us)
+sf::st_write(us, "us.geojson", delete_dsn = TRUE)
