@@ -296,7 +296,7 @@
           datasets: [
             { label: 'Drought', borderColor: primaryColors.perc_drought, backgroundColor: primaryColors.perc_drought + '22', data: [], tension: 0.4 },
             { label: 'Flood', borderColor: primaryColors.perc_flood, backgroundColor: primaryColors.perc_flood + '22', data: [], tension: 0.4 },
-            { label: 'Wildfire Smoke', borderColor: primaryColors.perc_smoke, backgroundColor: primaryColors.perc_smoke + '22', data: [], tension: 0.4 }
+            { label: 'Smoke', borderColor: primaryColors.perc_smoke, backgroundColor: primaryColors.perc_smoke + '22', data: [], tension: 0.4 }
           ]
         },
         options: {
@@ -325,12 +325,24 @@
         data: {
           labels: ['Total', 'Wildfire Smoke', 'Heat', 'Flood', 'Drought'],
           datasets: [{
+            label: 'National Percentile', // FIX: Added label to stop "undefined" appearing
             data: [0, 0, 0, 0, 0],
-            backgroundColor: [primaryColors.perc_all, primaryColors.perc_smoke, primaryColors.perc_heat, primaryColors.perc_flood, primaryColors.perc_drought],
+            backgroundColor: [
+              primaryColors.perc_all,
+              primaryColors.perc_smoke,
+              primaryColors.perc_heat,
+              primaryColors.perc_flood,
+              primaryColors.perc_drought
+            ],
             borderRadius: 4
           }]
         },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { max: 100 } } }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { max: 100, grid: { display: false } } }
+        }
       });
     }
 
