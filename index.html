@@ -134,6 +134,42 @@
         <p class="text-sm left-font tracking-wider leading-relaxed">
           <a href="/download/xtoll2.geojson" class="hover:underline" download>Download (GeoJSON)</a>
         </p>
+
+        <!-- START: SHARE SECTION -->
+        <div class="mt-4 font-bold left-font tracking-wider text-md opacity-60">Share to Social Media</div>
+        <div class="flex left-font flex-col gap-3 mt-1">
+
+          <button onclick="copyLink()" id="copy-btn"
+            class="flex items-center gap-2 hover:opacity-80 transition-opacity text-left w-full">
+            <span class="w-6 h-6 flex items-center justify-center text-[18px]">🔗</span>
+            <span>Copy Link</span>
+          </button>
+
+          <a href="mailto:?subject=XToll Dashboard&body=Check out this Extreme Weather Toll Tracker: [YOUR-URL]"
+            id="email-share" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <span class="w-6 h-6 flex items-center justify-center text-[18px]">✉️</span>
+            <span>Send via Email</span>
+          </a>
+
+          <a href="https://www.facebook.com/sharer/sharer.php?u=[YOUR-URL]" target="_blank" rel="noopener noreferrer"
+            class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <img src="svg/facebook.svg" alt="" width="24" height="24" class="block">
+            <span>Share on Facebook</span>
+          </a>
+
+          <a href="https://twitter.com/intent/tweet?url=[YOUR-URL]" target="_blank" rel="noopener noreferrer"
+            class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <span class="w-6 h-6 flex items-center justify-center text-[18px] font-bold">𝕏</span>
+            <span>Post on 𝕏</span>
+          </a>
+
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url=[YOUR-URL]" target="_blank"
+            rel="noopener noreferrer" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <img src="svg/linkedin.svg" alt="" width="24" height="24" class="block">
+            <span>Post on LinkedIn</span>
+          </a>
+
+        </div>
       </nav>
     </aside>
 
