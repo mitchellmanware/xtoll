@@ -27,3 +27,14 @@ states <- sf::st_read("states.geojson")
 us <- sf::st_union(states)
 plot(us)
 sf::st_write(us, "us.geojson", delete_dsn = TRUE)
+
+
+color <- c(
+  '#4575b4',
+  '#74add1',
+  '#abd9e9',
+  '#fed976',
+  '#feb24c',
+  '#f03b20',
+  '#bd0026'
+)

@@ -259,12 +259,6 @@
               class="h-16 w-auto max-w-[90%] object-contain">
           </a>
 
-          <a href="https://medicine.yale.edu/lab/kaichen/"
-            class="hover:opacity-80 transition-opacity w-full flex justify-center" target="_blank">
-            <img src="yccch/chenlab.png" alt="Climate, Health, and Environment Nexus (CHEN) Lab"
-              class="h-16 w-auto max-w-[90%] object-contain">
-          </a>
-
           <span class="text-md left-font text-gray-600 w-full">
             <b>Last Updated: 18 January 2026</b><br>
             Contributors:<br>
@@ -283,7 +277,7 @@
   <script>
     // 1. Color Configuration
     const colorSchemes = {
-      perc_all: ['#f2f0f7', '#dadaeb', '#bcbddc', '#9e9ac8', '#807dba', '#6a51a3', '#4a1486'],     // Purples
+      perc_all: ['#4575b4', '#74add1', '#abd9e9', '#fed976', '#feb24c', '#f03b20', '#bd0026'],     // Blue-Red
       perc_smoke: ['#fff5eb', '#fee6ce', '#fdd0a2', '#fdae6b', '#fd8d3c', '#e6550d', '#a63603'],   // Oranges
       perc_heat: ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#de2d26', '#a50f15'],    // Reds
       perc_flood: ['#f7fcf5', '#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45'],   // Greens
@@ -291,7 +285,7 @@
     };
 
     const primaryColors = {
-      perc_all: '#6a51a3',
+      perc_all: '#4575b4',
       perc_smoke: '#e6550d',
       perc_heat: '#de2d26',
       perc_flood: '#41ab5d',
@@ -313,7 +307,7 @@
     function style(feature) {
       return {
         fillColor: getColor(feature.properties[currentVariable], currentVariable),
-        weight: 0, opacity: 1, color: 'white', fillOpacity: 0.8
+        weight: 0, opacity: 1, color: 'white', fillOpacity: 0.7
       };
     }
 
