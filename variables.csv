@@ -1,0 +1,22 @@
+Attribute Name, Data Name, Class/Type, Description
+County, County, String, County name
+State, State, String, State name
+GEOID, GEOID, String, 5-digit FIPS code
+Region, Region, String, Census region
+Division, Division, String, Census division
+Rank All, rank_all, Integer, All-event mortality rate rank
+Gap All, gap_all, Integer, All-event mortality risk perception gap
+Rank Smoke, rank_smoke, Integer, Wildfire smoke mortality rate rank
+Gap Smoke, gap_smoke, Integer, Wildfire smoke mortality risk perception gap
+Rank Heat, rank_heat, Integer, Heat mortality rate rank
+Gap Heat, gap_heat, Integer, Heat mortality risk perception gap
+Rank Flood, rank_flood, Integer, Flood mortality rate rank
+Gap Flood, gap_flood, Integer, Flood mortality risk perception gap
+Rank Drought, rank_drought, Integer, Drought mortality rate rank
+Gap Drought, gap_drought, Integer, Drought mortality risk perception gap
+Income, income, Float, Median household income
+Age, age, Float, Median age
+Nonwhite, nonwhite, Float, Percentage of population that is not non-Hispanic white
+Education, education, Float, Percentage of adults with less than a Bachelor's degree
+Personal, personal, Float, Percentage of adults who think that global warming will harm them personally a moderate amount or great deal
+Happening, happening, Float, Percentage of adults who think that global warming is happening
