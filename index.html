@@ -132,7 +132,7 @@
 
         <div class="mt-4 font-bold left-font tracking-wider text-md opacity-60">Data</div>
         <p class="text-sm left-font tracking-wider leading-relaxed">
-          <a href="/download/xtoll2.geojson" class="hover:underline" download>Download (GeoJSON)</a>
+          <a href="/download/xtoll3.geojson" class="hover:underline" download>Download (GeoJSON)</a>
         </p>
 
         <!-- START: SHARE SECTION -->
@@ -409,9 +409,9 @@
           console.warn('Trend data failed to load:', mortRes.status);
         }
 
-        // 2. Load Main Data (xtoll2.geojson)
+        // 2. Load Main Data (xtoll3.geojson)
         loadingText.innerText = "Loading Map Data...";
-        const response = await fetch('/xtoll2.geojson');
+        const response = await fetch('/xtoll3.geojson');
         if (!response.ok) throw new Error(`Map data failed to load: ${response.status}`);
 
         const data = await response.json();

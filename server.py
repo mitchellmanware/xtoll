@@ -13,15 +13,15 @@ def index():
 
 
 # Explicit route to serve the GeoJSON files with correct MIME type
-@app.route("/xtoll2.geojson")
+@app.route("/xtoll3.geojson")
 def get_geojson():
     try:
         # Using explicit response to ensure UTF-8 encoding
-        with open("xtoll2.geojson", "r", encoding="utf-8") as f:
+        with open("xtoll3.geojson", "r", encoding="utf-8") as f:
             content = f.read()
         return app.response_class(content, mimetype="application/json")
     except Exception as e:
-        return f"Error reading xtoll2.geojson: {str(e)}", 404
+        return f"Error reading xtoll3.geojson: {str(e)}", 404
 
 
 @app.route("/states.geojson")
@@ -59,7 +59,7 @@ def get_mortality_data():
 def download_file(filename):
     try:
         # Security check: only allow specific files to be downloaded
-        allowed_files = ["xtoll2.geojson", "states.geojson", "df_mortality.csv"]
+        allowed_files = ["xtoll3.geojson", "states.geojson", "df_mortality.csv"]
         if filename in allowed_files:
             return send_file(filename, as_attachment=True)
         else:
