@@ -151,20 +151,20 @@
             <span>Send via Email</span>
           </a>
 
-          <a href="https://www.facebook.com/sharer/sharer.php?u=[YOUR-URL]" target="_blank" rel="noopener noreferrer"
+          <a href="#" id="facebook-share" target="_blank" rel="noopener noreferrer"
             class="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img src="svg/facebook.svg" alt="" width="24" height="24" class="block">
             <span>Share on Facebook</span>
           </a>
 
-          <a href="https://twitter.com/intent/tweet?url=[YOUR-URL]" target="_blank" rel="noopener noreferrer"
+          <a href="#" id="twitter-share" target="_blank" rel="noopener noreferrer"
             class="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <span class="w-6 h-6 flex items-center justify-center text-[18px] font-bold">𝕏</span>
             <span>Post on 𝕏</span>
           </a>
 
-          <a href="https://www.linkedin.com/sharing/share-offsite/?url=[YOUR-URL]" target="_blank"
-            rel="noopener noreferrer" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <a href="#" id="linkedin-share" target="_blank" rel="noopener noreferrer"
+            class="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img src="svg/linkedin.svg" alt="" width="24" height="24" class="block">
             <span>Post on LinkedIn</span>
           </a>
@@ -187,7 +187,7 @@
               <div class="flex flex-col items-center">
                 <div class="w-10 h-10 border-4 border-yale-blue border-t-transparent rounded-full animate-spin mb-2">
                 </div>
-                <p class="text-sm font-bold text-yale-blue">Loading Data...</p>
+                <p id="loading-text" class="text-sm font-bold text-yale-blue">Loading Data...</p>
               </div>
             </div>
             <div id="map" class="rounded border border-gray-100"></div>
@@ -372,7 +372,7 @@
         data: {
           labels: ['Total', 'Wildfire Smoke', 'Heat', 'Flood', 'Drought'],
           datasets: [{
-            label: 'National Percentile', // FIX: Added label to stop "undefined" appearing
+            label: 'National Percentile',
             data: [0, 0, 0, 0, 0],
             backgroundColor: [
               primaryColors.perc_all,
@@ -396,41 +396,71 @@
     // 5. Data Loading and Interaction
     async function loadData() {
       const loadingOverlay = document.getElementById('loading-overlay');
-      try {
-        const mortRes = await fetch('/mortality_data');
-        if (mortRes.ok) mortalityData = await mortRes.json();
+      const loadingText = document.getElementById('loading-text');
 
+      try {
+        // 1. Load Mortality Trend Data
+        loadingText.innerText = "Loading Trend Data...";
+        const mortRes = await fetch('/mortality_data');
+        if (mortRes.ok) {
+          mortalityData = await mortRes.json();
+          console.log('Trend data loaded:', mortalityData.length, 'records');
+        } else {
+          console.warn('Trend data failed to load:', mortRes.status);
+        }
+
+        // 2. Load Main Data (xtoll2.geojson)
+        loadingText.innerText = "Loading Map Data...";
         const response = await fetch('/xtoll2.geojson');
+        if (!response.ok) throw new Error(`Map data failed to load: ${response.status}`);
+
         const data = await response.json();
+        console.log('Map data loaded:', data.features.length, 'features');
 
         geojsonLayer = L.geoJSON(data, {
           style: style,
           onEachFeature: (f, l) => {
             l.on({
               mouseover: (e) => e.target.setStyle({ fillOpacity: 1, weight: 2 }),
-              mouseout: (e) => e.target.setStyle({ fillOpacity: 0.8, weight: 0.5 }),
-              click: (e) => updateDashboard(f.properties)
+              mouseout: (e) => e.target.setStyle({ fillOpacity: 0.8, weight: 0 }),
+              click: (e) => {
+                // Reinstate automatic zoom to county
+                map.fitBounds(e.target.getBounds());
+                updateDashboard(f.properties);
+              }
             });
           }
         }).addTo(map);
 
+
+        // 3. Load States Overlay
+        loadingText.innerText = "Loading Overlays...";
         const statesRes = await fetch('/states.geojson');
         if (statesRes.ok) {
-          statesLayer = L.geoJSON(await statesRes.json(), { style: { color: '#888888', weight: 1, fillOpacity: 0, interactive: false } }).addTo(map);
+          statesLayer = L.geoJSON(await statesRes.json(), {
+            style: { color: '#888888', weight: 1, fillOpacity: 0, interactive: false }
+          }).addTo(map);
           statesLayer.bringToFront();
         }
 
         const usRes = await fetch('/us.geojson');
         if (usRes.ok) {
-          usLayer = L.geoJSON(await usRes.json(), { style: { color: '#000000', weight: 1.5, fillOpacity: 0, interactive: false } }).addTo(map);
-          usLayer.bringToFront();
+          const usData = await usRes.json();
+          L.geoJSON(usData, {
+            style: { color: '#000000', weight: 1.5, fillOpacity: 0, interactive: false }
+          }).addTo(map).bringToFront();
         }
 
-
-        map.fitBounds(geojsonLayer.getBounds());
+        if (data.features.length > 0) map.fitBounds(geojsonLayer.getBounds());
         loadingOverlay.style.display = 'none';
+
       } catch (err) {
-        loadingOverlay.innerHTML = `<p class="text-red-600 font-bold">Error loading data</p>`;
+        console.error('Data loading error:', err);
+        loadingOverlay.innerHTML = `<div class="text-center p-4">
+          <p class="text-red-600 font-bold mb-2">Error loading data</p>
+          <p class="text-xs text-gray-500">${err.message}</p>
+          <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-yale-blue text-white rounded text-sm">Retry</button>
+        </div>`;
       }
     }
 
@@ -452,8 +482,6 @@
           <tr><td><strong>Flood Percentile</strong></td><td>${props.perc_flood || 'N/A'}</td></tr>
           <tr><td><strong>Drought Percentile</strong></td><td>${props.perc_drought || 'N/A'}</td></tr>
         </table>`;
-
-
 
       rankingChart.data.datasets[0].data = [props.perc_all || 0, props.perc_smoke || 0, props.perc_heat || 0, props.perc_flood || 0, props.perc_drought || 0];
       rankingChart.update();
@@ -480,6 +508,32 @@
       if (geojsonLayer) geojsonLayer.setStyle(style);
       legend.update(currentVariable);
     });
+
+    // SHARE LOGIC
+    function copyLink() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById('copy-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span>✅</span> Copied!';
+        setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+      });
+    }
+
+    const pageUrl = encodeURIComponent(window.location.href);
+    const pageTitle = encodeURIComponent(document.title);
+
+    const twitterBtn = document.getElementById('twitter-share');
+    if (twitterBtn) twitterBtn.href = `https://twitter.com/intent/tweet?url=${pageUrl}&text=${pageTitle}`;
+
+    const facebookBtn = document.getElementById('facebook-share');
+    if (facebookBtn) facebookBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
+
+    const linkedinBtn = document.getElementById('linkedin-share');
+    if (linkedinBtn) linkedinBtn.href = `https://www.linkedin.com/sharing/share-offsite/?url=${pageUrl}`;
+
+    const emailBtn = document.getElementById('email-share');
+    if (emailBtn) emailBtn.href = `mailto:?subject=${pageTitle}&body=Check out this dashboard: ${pageUrl}`;
 
     initCharts();
     loadData();
