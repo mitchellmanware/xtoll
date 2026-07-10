@@ -13,21 +13,23 @@ def index():
 
 
 # Explicit route to serve the GeoJSON files with correct MIME type
-@app.route("/xtoll3.geojson")
+@app.route("/xtoll.geojson")
 def get_geojson():
     try:
         # Using explicit response to ensure UTF-8 encoding
-        with open("xtoll3.geojson", "r", encoding="utf-8") as f:
+        with open(os.path.join("data", "xtoll.geojson"), "r", encoding="utf-8") as f:
             content = f.read()
         return app.response_class(content, mimetype="application/json")
     except Exception as e:
-        return f"Error reading xtoll3.geojson: {str(e)}", 404
+        return f"Error reading xtoll.geojson: {str(e)}", 404
 
 
 @app.route("/states.geojson")
 def get_states():
     try:
-        return send_from_directory(".", "states.geojson", mimetype="application/json")
+        return send_from_directory(
+            "data", "states.geojson", mimetype="application/json"
+        )
     except Exception as e:
         return str(e), 404
 
@@ -35,7 +37,7 @@ def get_states():
 @app.route("/us.geojson")
 def get_us():
     try:
-        return send_from_directory(".", "us.geojson", mimetype="application/json")
+        return send_from_directory("data", "us.geojson", mimetype="application/json")
     except Exception as e:
         return str(e), 404
 
@@ -43,8 +45,8 @@ def get_us():
 @app.route("/mortality_data")
 def get_mortality_data():
     try:
-        if os.path.exists("df_mortality.csv"):
-            df = pd.read_csv("df_mortality.csv")
+        if os.path.exists("data/df_mortality.csv"):
+            df = pd.read_csv("data/df_mortality.csv")
             # Replace NaN values with None, which jsonify converts to null
             df = df.where(pd.notnull(df), None)
             return jsonify(df.to_dict(orient="records"))
@@ -59,9 +61,9 @@ def get_mortality_data():
 def download_file(filename):
     try:
         # Security check: only allow specific files to be downloaded
-        allowed_files = ["xtoll3.geojson", "states.geojson", "df_mortality.csv"]
+        allowed_files = ["xtoll.geojson", "states.geojson", "df_mortality.csv"]
         if filename in allowed_files:
-            return send_file(filename, as_attachment=True)
+            return send_file(os.path.join("data", filename), as_attachment=True)
         else:
             return "File not authorized for download", 403
     except Exception as e:
