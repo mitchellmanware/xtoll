@@ -132,7 +132,7 @@
 
         <div class="mt-4 font-bold left-font tracking-wider text-md opacity-60">Data</div>
         <p class="text-sm left-font tracking-wider leading-relaxed">
-          <a href="/download/xtoll3.geojson" class="hover:underline" download>Download (GeoJSON)</a>
+          <a href="data/xtoll.geojson" class="hover:underline" download>Download (GeoJSON)</a>
         </p>
 
         <!-- START: SHARE SECTION -->
@@ -153,7 +153,7 @@
 
           <a href="#" id="facebook-share" target="_blank" rel="noopener noreferrer"
             class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="svg/facebook.svg" alt="" width="24" height="24" class="block">
+            <img src="icons/facebook.svg" alt="" width="24" height="24" class="block">
             <span>Share on Facebook</span>
           </a>
 
@@ -165,7 +165,7 @@
 
           <a href="#" id="linkedin-share" target="_blank" rel="noopener noreferrer"
             class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src="svg/linkedin.svg" alt="" width="24" height="24" class="block">
+            <img src="icons/linkedin.svg" alt="" width="24" height="24" class="block">
             <span>Post on LinkedIn</span>
           </a>
 
@@ -405,7 +405,7 @@
       try {
         // 1. Load Mortality Trend Data
         loadingText.innerText = "Loading Trend Data...";
-        const mortRes = await fetch('/mortality_data');
+        const mortRes = await fetch('data/df_mortality.json');
         if (mortRes.ok) {
           mortalityData = await mortRes.json();
           console.log('Trend data loaded:', mortalityData.length, 'records');
@@ -413,9 +413,9 @@
           console.warn('Trend data failed to load:', mortRes.status);
         }
 
-        // 2. Load Main Data (xtoll3.geojson)
+        // 2. Load Main Data (xtoll.geojson)
         loadingText.innerText = "Loading Map Data...";
-        const response = await fetch('/xtoll3.geojson');
+        const response = await fetch('data/xtoll.geojson');
         if (!response.ok) throw new Error(`Map data failed to load: ${response.status}`);
 
         const data = await response.json();
@@ -439,7 +439,7 @@
 
         // 3. Load States Overlay
         loadingText.innerText = "Loading Overlays...";
-        const statesRes = await fetch('/states.geojson');
+        const statesRes = await fetch('data/states.geojson');
         if (statesRes.ok) {
           statesLayer = L.geoJSON(await statesRes.json(), {
             style: { color: '#888888', weight: 1, fillOpacity: 0, interactive: false }
@@ -447,7 +447,7 @@
           statesLayer.bringToFront();
         }
 
-        const usRes = await fetch('/us.geojson');
+        const usRes = await fetch('data/us.geojson');
         if (usRes.ok) {
           const usData = await usRes.json();
           L.geoJSON(usData, {
