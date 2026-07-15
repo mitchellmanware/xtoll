@@ -303,7 +303,7 @@
     };
 
     let currentVariable = 'perc_all';
-    let geojsonLayer, statesLayer, map, trendsChart, rankingChart;
+    let geojsonLayer, statesLayer, map, trendsChart, rankingChart, selectedLayer;
     let mortalityData = [];
     let currentSelectedState = null;
 
@@ -432,17 +432,48 @@
           style: style,
           onEachFeature: (f, l) => {
             l.on({
-              mouseover: (e) => e.target.setStyle({ fillOpacity: 1, weight: 2 }),
-              mouseout: (e) => e.target.setStyle({ fillOpacity: 0.8, weight: 0 }),
+              mouseover: (e) => {
+                const layer = e.target;
+                // Only change hover styling if it's not the currently selected county
+                if (layer !== selectedLayer) {
+                  layer.setStyle({ fillOpacity: 1, weight: 1.5, color: '#666666' });
+                }
+              },
+              mouseout: (e) => {
+                const layer = e.target;
+                // Only revert style if it's not the currently selected county
+                if (layer !== selectedLayer) {
+                  geojsonLayer.resetStyle(layer);
+                }
+              },
               click: (e) => {
-                // Reinstate automatic zoom to county
-                map.fitBounds(e.target.getBounds());
+                const layer = e.target;
+
+                // 1. Reset the style of the previously selected county
+                if (selectedLayer) {
+                  geojsonLayer.resetStyle(selectedLayer);
+                }
+
+                // 2. Track the newly clicked county and apply a bold black outline
+                selectedLayer = layer;
+                selectedLayer.setStyle({
+                  color: '#000000',  // Black border
+                  weight: 3,         // Thick border line
+                  fillOpacity: 0.85  // Slightly boosted opacity to stand out
+                });
+
+                // Bring it to the front so the black border isn't covered by adjacent counties
+                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                  selectedLayer.bringToFront();
+                }
+
+                // 3. Zoom with padding and update dashboard
+                map.fitBounds(layer.getBounds(), { padding: [150, 150] });
                 updateDashboard(f.properties);
               }
             });
           }
         }).addTo(map);
-
 
         // 3. Load States Overlay
         loadingText.innerText = "Loading Overlays...";
