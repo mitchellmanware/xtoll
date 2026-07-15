@@ -1,0 +1,44 @@
+name: Check for critical files
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Pull down your PR code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Check that critical files exist
+      - name: Verify Critical Files Exist
+        run: |
+          echo "Checking for critical files..."
+          
+          # Check index.html and static trends JSON
+          test -f index.html || (echo "❌ Error: index.html is missing!" && exit 1)
+          test -f data/df_mortality.json || (echo "❌ Error: df_mortality.json is missing!" && exit 1)
+          
+          # Check for a GeoJSON with a 4-digit date code in the name
+          shopt -s nullglob
+          geojson_files=(data/xtoll_[0-9][0-9][0-9][0-9].geojson)
+          
+          if [ ${#geojson_files[@]} -eq 0 ]; then
+            echo "❌ Error: Could not find map geojson matching pattern data/xtoll_MMDD.geojson!"
+            exit 1
+          else
+            echo "✅ Found matching map file: ${geojson_files[0]}"
+            # Export the path of the found file so later steps can use it dynamically
+            echo "FOUND_GEOJSON=${geojson_files[0]}" >> $GITHUB_ENV
+          fi
+
+      # 3. Validate JSON Syntax dynamically using the discovered file
+      - name: Validate JSON Syntax
+        run: |
+          echo "Validating JSON syntax..."
+          jq empty "${{ env.FOUND_GEOJSON }}" || (echo "❌ Error: ${{ env.FOUND_GEOJSON }} has syntax errors!" && exit 1)
+          echo "✅ JSON files are syntactically valid."

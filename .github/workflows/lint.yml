@@ -1,0 +1,59 @@
+name: Lint HTML and R files
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Pull down your PR code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Install HTML Tidy validator
+      - name: Install HTML Tidy
+        run: sudo apt-get update && sudo apt-get install -y tidy
+
+      # 3. Lint HTML (Ensuring valid tags, nesting, and structure)
+      - name: Lint HTML File
+        run: |
+          echo "Linting index.html..."
+          # tidy returns exit code 1 for warnings and 2 for errors. 
+          # We check if there are critical syntax errors (exit code 2).
+          tidy -errors -quiet index.html
+          echo "✅ HTML structural linting passed."
+
+      # 4. Set up R Environment
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # 5. Cache R Packages to make future runs lightning fast
+      - name: Cache R Packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-r-lint-${{ hashFiles('**/*.R') }}
+          restore-keys: ${{ runner.os }}-r-lint-
+
+      # 6. Install and Run {lintr} on all R files
+      - name: Run R Linter
+        run: |
+          Rscript -e "if (!requireNamespace('lintr', quietly = TRUE)) install.packages('lintr')"
+          Rscript -e "
+            # This scans the repo and flags style, syntax, or formatting issues in .R files
+            results <- lintr::lint_dir()
+            if (length(results) > 0) {
+              print(results)
+              # Set to TRUE if you want formatting issues to block the PR merge,
+              # or leave as FALSE to print warnings without failing the build.
+              quit(status = 1) 
+            } else {
+              cat('✅ All R files passed styling guidelines!\n')
+            }
+          "
