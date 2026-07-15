@@ -7,10 +7,10 @@ XToll is an interactive dashboard which visualizes the county-level rankings for
 XToll was developed by researchers at the [Yale Center on Climate Change and Health (YCCCH)](https://ysph.yale.edu/yale-center-on-climate-change-and-health/) and in the [Climate, Health, and Environment Nexus Lab (CHENLab)](https://medicine.yale.edu/lab/kaichen/).
 
 <ul>
-  <li>Kai Chen, PhD <a href="https://orcid.org/0000-0002-0164-1112" target="_blank" rel="noopener noreferrer"><img src="icons/orcid.svg" alt="ORCID" width="16" height="16" style="vertical-align: middle; display: inline-block; margin-left: 4px;"></a></li>
-  <li>Lingzhi Chu, PhD <a href="https://orcid.org/0000-0002-7613-2769" target="_blank" rel="noopener noreferrer"><img src="icons/orcid.svg" alt="ORCID" width="16" height="16" style="vertical-align: middle; display: inline-block; margin-left: 4px;"></a></li>
-  <li>Ying Hu, PhD <a href="https://orcid.org/0000-0002-5950-0929" target="_blank" rel="noopener noreferrer"><img src="icons/orcid.svg" alt="ORCID" width="16" height="16" style="vertical-align: middle; display: inline-block; margin-left: 4px;"></a></li>
-  <li>Mitchell Manware, MPH <a href="https://orcid.org/0009-0003-6440-6106" target="_blank" rel="noopener noreferrer"><img src="icons/orcid.svg" alt="ORCID" width="16" height="16" style="vertical-align: middle; display: inline-block; margin-left: 4px;"></a></li>
+  <li>Kai Chen, PhD <a href="https://orcid.org/0000-0002-0164-1112" target="_blank" rel="noopener noreferrer"><img src="svg/orcid.svg" alt="ORCID" width="16" height="16" style="vertical-align: middle; display: inline-block; margin-left: 4px;"></a></li>
+  <li>Lingzhi Chu, PhD <a href="https://orcid.org/0000-0002-7613-2769" target="_blank" rel="noopener noreferrer"><img src="svg/orcid.svg" alt="ORCID" width="16" height="16" style="vertical-align: middle; display: inline-block; margin-left: 4px;"></a></li>
+  <li>Ying Hu, PhD <a href="https://orcid.org/0000-0002-5950-0929" target="_blank" rel="noopener noreferrer"><img src="svg/orcid.svg" alt="ORCID" width="16" height="16" style="vertical-align: middle; display: inline-block; margin-left: 4px;"></a></li>
+  <li>Mitchell Manware, MPH <a href="https://orcid.org/0009-0003-6440-6106" target="_blank" rel="noopener noreferrer"><img src="svg/orcid.svg" alt="ORCID" width="16" height="16" style="vertical-align: middle; display: inline-block; margin-left: 4px;"></a></li>
 </ul>
 
 ## References
